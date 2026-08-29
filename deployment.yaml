@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: proxmox-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: proxmox-app
+  template:
+    metadata:
+      labels:
+        app: proxmox-app
+    spec:
+      containers:
+      - name: proxmox-app
+        image: rawipasp/proxmox-app:latest
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: proxmox-app-service
+spec:
+  type: NodePort
+  selector:
+    app: proxmox-app
+  ports:
+  - port: 80
+    targetPort: 80
+    nodePort: 30090
