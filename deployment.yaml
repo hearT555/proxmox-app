@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: proxmox-app
-        image: rawipasp/proxmox-app:latest
+        image: heart2709/proxmox-app:latest
         ports:
         - containerPort: 80
 ---

@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        DOCKER_IMAGE = "rawipasp/proxmox-app"
+        DOCKER_IMAGE = "heart2709/proxmox-app"
         DOCKER_TAG = "latest"
     }
     stages {
