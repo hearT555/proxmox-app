@@ -31,6 +31,8 @@ pipeline {
         stage('Deploy to K8S') {
             steps {
                 sh "kubectl apply -f deployment.yaml"
+                sh "kubectl rollout restart deployment/proxmox-app"
+                sh "kubectl rollout status deployment/proxmox-app --timeout=180s"
             }
         }
     }
