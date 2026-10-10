@@ -1,8 +1,117 @@
-<!DOCTYPE html>
-<html>
-<head><title>Proxmox App</title></head>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1220">
+  <meta name="description" content="Proxmox App deployment landing page.">
+  <title>Proxmox App</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b1220;
+      --panel: rgba(18, 29, 48, .78);
+      --line: rgba(162, 184, 216, .16);
+      --text: #edf4ff;
+      --muted: #a6b5ca;
+      --accent: #61e6b1;
+      --blue: #75a7ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(ellipse at 16% 8%, rgba(42, 102, 139, .28), transparent 42%),
+        radial-gradient(ellipse at 88% 78%, rgba(59, 87, 161, .2), transparent 38%),
+        var(--bg);
+      font: 16px/1.6 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    a { color: inherit; }
+    .shell { width: min(1080px, calc(100% - 40px)); margin: 0 auto; }
+    header { display: flex; align-items: center; justify-content: space-between; padding: 26px 0; }
+    .brand { display: inline-flex; gap: 12px; align-items: center; font-weight: 700; letter-spacing: .02em; }
+    .brand-mark {
+      display: grid; width: 38px; height: 38px; place-items: center; border: 1px solid var(--line);
+      border-radius: 12px; color: var(--accent); background: rgba(97, 230, 177, .08);
+    }
+    .repo-link { color: var(--muted); text-decoration: none; font-size: .92rem; }
+    .repo-link:hover { color: var(--text); }
+    main { padding: clamp(42px, 9vw, 104px) 0 70px; }
+    .eyebrow { display: flex; align-items: center; gap: 10px; color: var(--accent); font-size: .82rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 16px var(--accent); }
+    h1 { max-width: 760px; margin: 20px 0 18px; font-size: clamp(2.7rem, 7vw, 5.4rem); line-height: 1.04; letter-spacing: -.055em; }
+    h1 span { color: var(--blue); }
+    .intro { max-width: 640px; margin: 0; color: var(--muted); font-size: clamp(1.05rem, 2vw, 1.22rem); }
+    .panel { margin-top: 52px; padding: 28px; border: 1px solid var(--line); border-radius: 20px; background: var(--panel); box-shadow: 0 24px 80px rgba(0, 0, 0, .2); backdrop-filter: blur(12px); }
+    .panel-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+    h2 { margin: 0; font-size: 1.1rem; }
+    .panel-heading p { margin: 0; color: var(--muted); font-size: .9rem; }
+    .flow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .step { min-height: 142px; padding: 20px; border: 1px solid var(--line); border-radius: 14px; background: rgba(255, 255, 255, .025); }
+    .step-number { color: var(--blue); font-size: .78rem; font-weight: 700; letter-spacing: .1em; }
+    .step h3 { margin: 11px 0 5px; font-size: 1rem; }
+    .step p { margin: 0; color: var(--muted); font-size: .9rem; }
+    footer { display: flex; justify-content: space-between; gap: 18px; padding: 24px 0 32px; border-top: 1px solid var(--line); color: var(--muted); font-size: .85rem; }
+    @media (max-width: 680px) {
+      .shell { width: min(100% - 28px, 560px); }
+      header { padding: 20px 0; }
+      .repo-link { font-size: .8rem; }
+      main { padding-top: 54px; }
+      .panel { margin-top: 38px; padding: 20px; }
+      .panel-heading { display: block; }
+      .panel-heading p { margin-top: 5px; }
+      .flow { grid-template-columns: 1fr; }
+      .step { min-height: auto; }
+      footer { flex-direction: column; gap: 4px; }
+    }
+  </style>
+</head>
 <body>
-  <h1>Hello from Proxmox Cluster!</h1>
-  <p>Deployed by Jenkins + Kubernetes</p>
+  <div class="shell">
+    <header>
+      <a class="brand" href="/" aria-label="Proxmox App home">
+        <span class="brand-mark" aria-hidden="true">P</span>
+        <span>Proxmox App</span>
+      </a>
+      <a class="repo-link" href="https://github.com/hearT555/proxmox-app" target="_blank" rel="noopener noreferrer">View source <span aria-hidden="true">↗</span></a>
+    </header>
+
+    <main>
+      <div class="eyebrow"><span class="dot" aria-hidden="true"></span> Deployment online</div>
+      <h1>Your app is<br><span>ready to go.</span></h1>
+      <p class="intro">A lightweight web application delivered with Jenkins, packaged in Docker, and served by Nginx on Kubernetes.</p>
+
+      <section class="panel" aria-labelledby="delivery-title">
+        <div class="panel-heading">
+          <h2 id="delivery-title">How it gets here</h2>
+          <p>From source code to a live page</p>
+        </div>
+        <div class="flow">
+          <article class="step">
+            <span class="step-number">01 / BUILD</span>
+            <h3>Jenkins</h3>
+            <p>Checks out the project and builds the container image.</p>
+          </article>
+          <article class="step">
+            <span class="step-number">02 / PACKAGE</span>
+            <h3>Docker</h3>
+            <p>Bundles this page with Nginx for consistent delivery.</p>
+          </article>
+          <article class="step">
+            <span class="step-number">03 / DEPLOY</span>
+            <h3>Kubernetes</h3>
+            <p>Runs the application in your cluster.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>Proxmox App</span>
+      <span>Built for a simpler deployment workflow.</span>
+    </footer>
+  </div>
 </body>
 </html>
