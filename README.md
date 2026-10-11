@@ -33,14 +33,14 @@ http://KUBERNETES_NODE_IP:30090/
 
 ## Jenkins: build every branch
 
-The root `Jenkinsfile` is designed for a Jenkins **Multibranch Pipeline**:
+The root `Jenkinsfile` is designed for a Jenkins **Multibranch Pipeline**. Jenkins discovers branches that contain this root `Jenkinsfile`:
 
 - Every discovered branch checks out its own code and builds a branch-specific Docker image on the Jenkins agent.
 - Only `main` logs in to Docker Hub, publishes the versioned and `latest` image tags, and deploys to Kubernetes.
 - Unknown branch metadata fails closed: it may build, but it does not publish or deploy.
 - The Docker Hub password is passed through Jenkins Credentials and shell environment variables, not Groovy string interpolation.
 
-Create a separate job so the existing `proxmox-app` Pipeline can remain available while this configuration is reviewed:
+Create a separate job after this PR is merged so the existing `proxmox-app` Pipeline can remain available during review. Until the PR is merged, `main` still has the old Jenkinsfile, which publishes and deploys on every run. If you need to scan the new branch before merging, temporarily configure a branch-name filter that excludes `main`; remove that filter after merging.
 
 1. In Jenkins, select **New Item**, enter `proxmox-app-multibranch`, choose **Multibranch Pipeline**, and create it.
 2. Under **Branch Sources**, add **GitHub** and select `hearT555/proxmox-app`. The repository is public; use a GitHub credential only if your Jenkins policy requires one.
@@ -50,7 +50,7 @@ Create a separate job so the existing `proxmox-app` Pipeline can remain availabl
 
 The Jenkins server in this lab uses a private LAN address, so GitHub.com cannot send a webhook directly to it. Periodic scanning is the simplest automatic option without exposing Jenkins. If Jenkins is later made reachable through a secured HTTPS endpoint or a relay, a GitHub webhook can trigger scans sooner.
 
-The current standalone `proxmox-app` job is not automatically converted by creating a Multibranch job. Avoid running both jobs automatically against `main` to prevent duplicate deployments. Once the Multibranch job is verified, disable duplicate triggers on the old job or keep it for manual use only.
+The current standalone `proxmox-app` job is not automatically converted by creating a Multibranch job. Avoid running both jobs automatically against `main` to prevent duplicate deployments. Once the Multibranch job is verified, disable duplicate triggers on the old job or keep it for manual use only. Existing branches without a root `Jenkinsfile` must receive one before Jenkins can build them.
 
 ## Scope and security
 
