@@ -13,10 +13,61 @@ spec:
         app: proxmox-app
     spec:
       containers:
-      - name: proxmox-app
-        image: heart2709/proxmox-app:latest
-        ports:
-        - containerPort: 80
+        - name: proxmox-app
+          image: heart2709/proxmox-app:latest
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8000
+          env:
+            - name: NETBOX_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: proxmox-app-settings
+                  key: NETBOX_URL
+            - name: NETBOX_AUTH_SCHEME
+              value: "Bearer"
+            - name: JENKINS_JOB_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: proxmox-app-settings
+                  key: JENKINS_JOB_URL
+            - name: NETBOX_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: proxmox-app-config
+                  key: netbox-token
+                  optional: true
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 2
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 25m
+              memory: 48Mi
+            limits:
+              cpu: 250m
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 10001
+            runAsGroup: 10001
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
 ---
 apiVersion: v1
 kind: Service
@@ -27,6 +78,9 @@ spec:
   selector:
     app: proxmox-app
   ports:
-  - port: 80
-    targetPort: 80
-    nodePort: 30090
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: http
+      nodePort: 30090
+

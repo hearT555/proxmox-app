@@ -1,21 +1,22 @@
 <!doctype html>
-<html lang="en">
+<html lang="th">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b1220">
-  <meta name="description" content="Proxmox App deployment landing page.">
-  <title>Proxmox App</title>
+  <meta name="description" content="Read-only virtual machine inventory from NetBox.">
+  <title>Infrastructure Dashboard</title>
   <style>
     :root {
       color-scheme: dark;
       --bg: #0b1220;
-      --panel: rgba(18, 29, 48, .78);
+      --panel: #121d30;
       --line: rgba(162, 184, 216, .16);
       --text: #edf4ff;
       --muted: #a6b5ca;
       --accent: #61e6b1;
       --blue: #75a7ff;
+      --danger: #ff9393;
     }
     * { box-sizing: border-box; }
     body {
@@ -24,94 +25,165 @@
       color: var(--text);
       background:
         radial-gradient(ellipse at 16% 8%, rgba(42, 102, 139, .28), transparent 42%),
-        radial-gradient(ellipse at 88% 78%, rgba(59, 87, 161, .2), transparent 38%),
         var(--bg);
-      font: 16px/1.6 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font: 16px/1.55 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
-    a { color: inherit; }
-    .shell { width: min(1080px, calc(100% - 40px)); margin: 0 auto; }
-    header { display: flex; align-items: center; justify-content: space-between; padding: 26px 0; }
-    .brand { display: inline-flex; gap: 12px; align-items: center; font-weight: 700; letter-spacing: .02em; }
-    .brand-mark {
-      display: grid; width: 38px; height: 38px; place-items: center; border: 1px solid var(--line);
-      border-radius: 12px; color: var(--accent); background: rgba(97, 230, 177, .08);
+    .shell { width: min(1120px, calc(100% - 36px)); margin: 0 auto; }
+    header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 24px 0; }
+    .brand { display: inline-flex; gap: 12px; align-items: center; color: var(--text); text-decoration: none; font-weight: 700; }
+    .brand-mark { display: grid; width: 38px; height: 38px; place-items: center; border: 1px solid var(--line); border-radius: 12px; color: var(--accent); }
+    main { padding: clamp(24px, 6vw, 68px) 0 54px; }
+    .eyebrow { color: var(--accent); font-size: .8rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    h1 { margin: 10px 0 8px; font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1.1; letter-spacing: -.04em; }
+    .intro { max-width: 680px; margin: 0; color: var(--muted); }
+    .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 28px; }
+    button, .button-link {
+      display: inline-flex; justify-content: center; align-items: center; gap: 8px;
+      min-height: 42px; padding: 9px 15px; border: 1px solid var(--line);
+      border-radius: 10px; color: var(--text); background: #18263d;
+      font: inherit; font-size: .92rem; text-decoration: none; cursor: pointer;
     }
-    .repo-link { color: var(--muted); text-decoration: none; font-size: .92rem; }
-    .repo-link:hover { color: var(--text); }
-    main { padding: clamp(42px, 9vw, 104px) 0 70px; }
-    .eyebrow { display: flex; align-items: center; gap: 10px; color: var(--accent); font-size: .82rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 16px var(--accent); }
-    h1 { max-width: 760px; margin: 20px 0 18px; font-size: clamp(2.7rem, 7vw, 5.4rem); line-height: 1.04; letter-spacing: -.055em; }
-    h1 span { color: var(--blue); }
-    .intro { max-width: 640px; margin: 0; color: var(--muted); font-size: clamp(1.05rem, 2vw, 1.22rem); }
-    .panel { margin-top: 52px; padding: 28px; border: 1px solid var(--line); border-radius: 20px; background: var(--panel); box-shadow: 0 24px 80px rgba(0, 0, 0, .2); backdrop-filter: blur(12px); }
-    .panel-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
-    h2 { margin: 0; font-size: 1.1rem; }
-    .panel-heading p { margin: 0; color: var(--muted); font-size: .9rem; }
-    .flow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-    .step { min-height: 142px; padding: 20px; border: 1px solid var(--line); border-radius: 14px; background: rgba(255, 255, 255, .025); }
-    .step-number { color: var(--blue); font-size: .78rem; font-weight: 700; letter-spacing: .1em; }
-    .step h3 { margin: 11px 0 5px; font-size: 1rem; }
-    .step p { margin: 0; color: var(--muted); font-size: .9rem; }
-    footer { display: flex; justify-content: space-between; gap: 18px; padding: 24px 0 32px; border-top: 1px solid var(--line); color: var(--muted); font-size: .85rem; }
-    @media (max-width: 680px) {
-      .shell { width: min(100% - 28px, 560px); }
-      header { padding: 20px 0; }
-      .repo-link { font-size: .8rem; }
-      main { padding-top: 54px; }
-      .panel { margin-top: 38px; padding: 20px; }
-      .panel-heading { display: block; }
-      .panel-heading p { margin-top: 5px; }
-      .flow { grid-template-columns: 1fr; }
-      .step { min-height: auto; }
-      footer { flex-direction: column; gap: 4px; }
+    button:hover, .button-link:hover { border-color: rgba(117, 167, 255, .6); }
+    button:disabled, .button-link[aria-disabled="true"] { opacity: .48; pointer-events: none; }
+    .button-primary { border-color: transparent; color: #07150f; background: var(--accent); font-weight: 700; }
+    .panel { margin-top: 22px; overflow: hidden; border: 1px solid var(--line); border-radius: 18px; background: rgba(18, 29, 48, .84); }
+    .panel-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 20px 22px; border-bottom: 1px solid var(--line); }
+    h2 { margin: 0; font-size: 1.05rem; }
+    .meta, .status-line { color: var(--muted); font-size: .88rem; }
+    .status-line { min-height: 24px; margin: 14px 22px; }
+    .status-line.error { color: var(--danger); }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
+    th, td { padding: 14px 18px; border-bottom: 1px solid var(--line); }
+    th { color: var(--muted); font-size: .76rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+    td { font-size: .92rem; }
+    tbody tr:last-child td { border-bottom: 0; }
+    .role { display: inline-block; padding: 3px 9px; border: 1px solid var(--line); border-radius: 999px; color: var(--blue); font-size: .8rem; }
+    .empty { padding: 26px 22px; color: var(--muted); text-align: center; }
+    footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; padding: 18px 0 30px; color: var(--muted); font-size: .82rem; }
+    @media (max-width: 600px) {
+      .shell { width: calc(100% - 24px); }
+      header { padding: 16px 0; }
+      .panel-head { display: block; }
+      .panel-head .meta { display: block; margin-top: 4px; }
+      th, td { padding: 12px 13px; }
     }
   </style>
 </head>
 <body>
   <div class="shell">
     <header>
-      <a class="brand" href="/" aria-label="Proxmox App home">
+      <a class="brand" href="/" aria-label="Infrastructure Dashboard home">
         <span class="brand-mark" aria-hidden="true">P</span>
-        <span>Proxmox App</span>
+        <span>Infrastructure Dashboard</span>
       </a>
-      <a class="repo-link" href="https://github.com/hearT555/proxmox-app" target="_blank" rel="noopener noreferrer">View source <span aria-hidden="true">↗</span></a>
+      <span class="meta">Inventory: NetBox</span>
     </header>
 
     <main>
-      <div class="eyebrow"><span class="dot" aria-hidden="true"></span> Deployment online</div>
-      <h1>Your app is<br><span>ready to go.</span></h1>
-      <p class="intro">A lightweight web application delivered with Jenkins, packaged in Docker, and served by Nginx on Kubernetes.</p>
+      <div class="eyebrow">Read-only VM inventory</div>
+      <h1>Virtual machines</h1>
+      <p class="intro">ดู IP, Role, สถานะ และ Cluster จาก NetBox ข้อมูลนี้อ่านอย่างเดียว การสั่ง Deploy จะเปิดหน้า Jenkins เพื่อให้ตรวจสอบและกด Build ในระบบ Jenkins</p>
 
-      <section class="panel" aria-labelledby="delivery-title">
-        <div class="panel-heading">
-          <h2 id="delivery-title">How it gets here</h2>
-          <p>From source code to a live page</p>
+      <div class="toolbar">
+        <button id="refresh-button" type="button">รีเฟรชรายการ</button>
+        <a id="jenkins-link" class="button-link button-primary" href="#" target="_blank" rel="noopener noreferrer" aria-disabled="true">กำลังเชื่อมต่อ Jenkins…</a>
+      </div>
+
+      <section class="panel" aria-labelledby="vm-title">
+        <div class="panel-head">
+          <h2 id="vm-title">VM inventory</h2>
+          <span class="meta" id="vm-count">รอข้อมูลจาก NetBox</span>
         </div>
-        <div class="flow">
-          <article class="step">
-            <span class="step-number">01 / BUILD</span>
-            <h3>Jenkins</h3>
-            <p>Checks out the project and builds the container image.</p>
-          </article>
-          <article class="step">
-            <span class="step-number">02 / PACKAGE</span>
-            <h3>Docker</h3>
-            <p>Bundles this page with Nginx for consistent delivery.</p>
-          </article>
-          <article class="step">
-            <span class="step-number">03 / DEPLOY</span>
-            <h3>Kubernetes</h3>
-            <p>Runs the application in your cluster.</p>
-          </article>
+        <div class="status-line" id="status-line" role="status" aria-live="polite">กำลังโหลดรายการ VM…</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>ชื่อ VM</th><th>Role</th><th>สถานะ</th><th>IP address</th><th>Cluster</th></tr>
+            </thead>
+            <tbody id="vm-rows"></tbody>
+          </table>
+          <div id="empty-state" class="empty" hidden>ไม่พบ VM ใน NetBox</div>
         </div>
       </section>
     </main>
 
     <footer>
-      <span>Proxmox App</span>
-      <span>Built for a simpler deployment workflow.</span>
+      <span>ข้อมูลมาจาก NetBox API โดยใช้ token ฝั่ง server</span>
+      <span>การสั่งงาน VM โดยตรงยังปิดไว้</span>
     </footer>
   </div>
+  <script>
+    const rows = document.getElementById("vm-rows");
+    const statusLine = document.getElementById("status-line");
+    const countLabel = document.getElementById("vm-count");
+    const emptyState = document.getElementById("empty-state");
+    const refreshButton = document.getElementById("refresh-button");
+    const jenkinsLink = document.getElementById("jenkins-link");
+
+    function addCell(row, value, className) {
+      const cell = document.createElement("td");
+      cell.textContent = value || "—";
+      if (className) cell.className = className;
+      row.appendChild(cell);
+    }
+
+    function renderMachines(machines) {
+      rows.replaceChildren();
+      for (const machine of machines) {
+        const row = document.createElement("tr");
+        addCell(row, machine.name);
+        addCell(row, machine.role, "role");
+        addCell(row, machine.status);
+        addCell(row, machine.ip);
+        addCell(row, machine.cluster);
+        rows.appendChild(row);
+      }
+      countLabel.textContent = `${machines.length} VM`;
+      emptyState.hidden = machines.length > 0;
+    }
+
+    async function loadConfig() {
+      try {
+        const response = await fetch("/api/config", { cache: "no-store" });
+        if (!response.ok) throw new Error();
+        const config = await response.json();
+        if (config.jenkins_job_url) {
+          jenkinsLink.href = config.jenkins_job_url;
+          jenkinsLink.textContent = "เปิด Jenkins เพื่อ Deploy";
+          jenkinsLink.setAttribute("aria-disabled", "false");
+        } else {
+          jenkinsLink.textContent = "ยังไม่ได้ตั้งค่า Jenkins";
+        }
+      } catch {
+        jenkinsLink.textContent = "เชื่อมต่อ Jenkins ไม่สำเร็จ";
+      }
+    }
+
+    async function loadMachines() {
+      refreshButton.disabled = true;
+      statusLine.classList.remove("error");
+      statusLine.textContent = "กำลังโหลดรายการ VM จาก NetBox…";
+      try {
+        const response = await fetch("/api/vms", { cache: "no-store" });
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.error || "อ่านข้อมูลไม่สำเร็จ");
+        renderMachines(payload.results || []);
+        statusLine.textContent = `อัปเดตข้อมูลแล้ว · ${new Date().toLocaleTimeString("th-TH")}`;
+      } catch (error) {
+        renderMachines([]);
+        countLabel.textContent = "ไม่มีข้อมูล";
+        statusLine.textContent = error.message || "เชื่อมต่อ NetBox ไม่สำเร็จ";
+        statusLine.classList.add("error");
+      } finally {
+        refreshButton.disabled = false;
+      }
+    }
+
+    refreshButton.addEventListener("click", loadMachines);
+    loadConfig();
+    loadMachines();
+  </script>
 </body>
 </html>
+
