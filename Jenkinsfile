@@ -5,6 +5,10 @@ pipeline {
         DOCKER_IMAGE = 'heart2709/proxmox-app'
     }
 
+    triggers {
+        pollSCM('H/2 * * * *')
+    }
+
     stages {
         stage('Checkout') {
             steps {
